@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_pu" default="compile.module.pu">
+  <dirname property="module.pu.basedir" file="${ant.file.module_pu}"/>
+  
+  <property name="module.jdk.home.pu" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.pu" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.pu" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.pu" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="pu.output.dir" value="${module.pu.basedir}/out/production/PU"/>
+  <property name="pu.testoutput.dir" value="${module.pu.basedir}/out/test/PU"/>
+  
+  <path id="pu.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="pu.module.production.classpath">
+    <path refid="${module.jdk.classpath.pu}"/>
+    <path refid="library.com.google.code.gson:gson:2.8.1.classpath"/>
+    <path refid="library.com.squareup.okhttp3:okhttp:3.3.1.classpath"/>
+  </path>
+  
+  <path id="pu.runtime.production.module.classpath">
+    <pathelement location="${pu.output.dir}"/>
+    <path refid="library.com.google.code.gson:gson:2.8.1.classpath"/>
+    <path refid="library.com.squareup.okhttp3:okhttp:3.3.1.classpath"/>
+  </path>
+  
+  <path id="pu.module.classpath">
+    <path refid="${module.jdk.classpath.pu}"/>
+    <pathelement location="${pu.output.dir}"/>
+    <path refid="library.com.google.code.gson:gson:2.8.1.classpath"/>
+    <path refid="library.com.squareup.okhttp3:okhttp:3.3.1.classpath"/>
+  </path>
+  
+  <path id="pu.runtime.module.classpath">
+    <pathelement location="${pu.testoutput.dir}"/>
+    <pathelement location="${pu.output.dir}"/>
+    <path refid="library.com.google.code.gson:gson:2.8.1.classpath"/>
+    <path refid="library.com.squareup.okhttp3:okhttp:3.3.1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.pu">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.pu">
+    <patternset refid="excluded.from.module.pu"/>
+  </patternset>
+  
+  <path id="pu.module.sourcepath">
+    <dirset dir="${module.pu.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.pu" depends="compile.module.pu.production,compile.module.pu.tests" description="Compile module PU"/>
+  
+  <target name="compile.module.pu.production" depends="register.custom.compilers" description="Compile module PU; production classes">
+    <mkdir dir="${pu.output.dir}"/>
+    <javac2 destdir="${pu.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.pu}/javac">
+      <compilerarg line="${compiler.args.pu}"/>
+      <bootclasspath refid="pu.module.bootclasspath"/>
+      <classpath refid="pu.module.production.classpath"/>
+      <src refid="pu.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.pu"/>
+    </javac2>
+    
+    <copy todir="${pu.output.dir}">
+      <fileset dir="${module.pu.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.pu.tests" depends="register.custom.compilers,compile.module.pu.production" description="compile module PU; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.pu" description="cleanup module">
+    <delete dir="${pu.output.dir}"/>
+    <delete dir="${pu.testoutput.dir}"/>
+  </target>
+</project>
