@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROGRAM="PU"
+PROGRAM="PU.jar"
 PROGDIR=`dirname $0` 
 
 if [ -z "$JAVACMD" ] ; then 
@@ -18,4 +18,4 @@ if [ -z "$JAVACMD" ] ; then
   fi
 fi
 
-$JAVACMD -Xms128m -Xmx1024m -cp "$PROGDIR/$PROGRAM.jar" $PROGRAM $@
+$JAVACMD -Xms128m -Xmx1024m -jar $PROGRAM
